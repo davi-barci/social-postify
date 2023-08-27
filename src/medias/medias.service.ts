@@ -26,4 +26,8 @@ export class MediasService {
 
     return await this.mediasRepository.create(body);
   }
+
+  async getAll() {
+    return await this.mediasRepository.findAll();
+  }
 }

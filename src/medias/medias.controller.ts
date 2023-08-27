@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get } from '@nestjs/common';
 import { MediasService } from './medias.service';
 import { CreateMediaDto } from './dto/create-media.dto';
 
@@ -9,5 +9,10 @@ export class MediasController {
   @Post()
   create(@Body() body: CreateMediaDto) {
     return this.mediasService.create(body);
+  }
+
+  @Get()
+  getAll() {
+    return this.mediasService.getAll();
   }
 }
