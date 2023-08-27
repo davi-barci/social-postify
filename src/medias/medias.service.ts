@@ -48,15 +48,25 @@ export class MediasService {
       throw new NotFoundException();
     }
 
-    const mediaExists = await this.mediasRepository.findOne(
+    const mediaAlreadyExists = await this.mediasRepository.findOne(
       body.title,
       body.username,
     );
 
-    if (mediaExists) {
+    if (mediaAlreadyExists) {
       throw new ConflictException();
     }
 
     return await this.mediasRepository.update(id, body);
+  }
+
+  async deleteMedia(id: number) {
+    const media = await this.mediasRepository.findOneById(id);
+
+    if (!media) {
+      throw new NotFoundException();
+    }
+
+    return this.mediasRepository.delete(id);
   }
 }

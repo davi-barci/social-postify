@@ -6,6 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Put,
+  Delete,
 } from '@nestjs/common';
 import { MediasService } from './medias.service';
 import { CreateMediaDto } from './dto/create-media.dto';
@@ -35,5 +36,10 @@ export class MediasController {
     @Body() body: CreateMediaDto,
   ) {
     return this.mediasService.updateMedia(id, body);
+  }
+
+  @Delete(':id')
+  deleteMedia(@Param('id', new ParseIntPipe()) id: number) {
+    return this.mediasService.deleteMedia(id);
   }
 }

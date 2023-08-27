@@ -42,4 +42,12 @@ export class MediasRepository {
       data: body,
     });
   }
+
+  async delete(id: number): Promise<Media> {
+    return await this.prisma.media.delete({
+      where: {
+        id,
+      },
+    });
+  }
 }
