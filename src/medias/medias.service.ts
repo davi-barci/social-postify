@@ -5,7 +5,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateMediaDto } from './dto/create-media.dto';
-import { UpdateMediaDto } from './dto/update-media.dto';
 import { MediasRepository } from './medias.respository';
 
 @Injectable()
@@ -40,5 +39,24 @@ export class MediasService {
     }
 
     return media;
+  }
+
+  async updateMedia(id: number, body: CreateMediaDto) {
+    const media = await this.mediasRepository.findOneById(id);
+
+    if (!media) {
+      throw new NotFoundException();
+    }
+
+    const mediaExists = await this.mediasRepository.findOne(
+      body.title,
+      body.username,
+    );
+
+    if (mediaExists) {
+      throw new ConflictException();
+    }
+
+    return await this.mediasRepository.update(id, body);
   }
 }

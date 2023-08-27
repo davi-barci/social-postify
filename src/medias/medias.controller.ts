@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Put,
 } from '@nestjs/common';
 import { MediasService } from './medias.service';
 import { CreateMediaDto } from './dto/create-media.dto';
@@ -26,5 +27,13 @@ export class MediasController {
   @Get(':id')
   getOneById(@Param('id', new ParseIntPipe()) id: number) {
     return this.mediasService.getOneById(id);
+  }
+
+  @Put(':id')
+  updateMedia(
+    @Param('id', new ParseIntPipe()) id: number,
+    @Body() body: CreateMediaDto,
+  ) {
+    return this.mediasService.updateMedia(id, body);
   }
 }

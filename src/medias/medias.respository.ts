@@ -33,4 +33,13 @@ export class MediasRepository {
       },
     });
   }
+
+  async update(id: number, body: CreateMediaDto): Promise<Media> {
+    return await this.prisma.media.update({
+      where: {
+        id,
+      },
+      data: body,
+    });
+  }
 }
