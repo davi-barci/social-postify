@@ -25,4 +25,12 @@ export class MediasRepository {
   async findAll(): Promise<Media[]> {
     return await this.prisma.media.findMany();
   }
+
+  async findOneById(id: number): Promise<Media | null> {
+    return await this.prisma.media.findFirst({
+      where: {
+        id: id,
+      },
+    });
+  }
 }

@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateMediaDto } from './dto/create-media.dto';
 import { UpdateMediaDto } from './dto/update-media.dto';
@@ -29,5 +30,15 @@ export class MediasService {
 
   async getAll() {
     return await this.mediasRepository.findAll();
+  }
+
+  async getOneById(id: number) {
+    const media = await this.mediasRepository.findOneById(id);
+
+    if (!media) {
+      throw new NotFoundException();
+    }
+
+    return media;
   }
 }
