@@ -3,9 +3,8 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -23,5 +22,10 @@ export class PostsController {
   @Get()
   getAll() {
     return this.postsService.getAll();
+  }
+
+  @Get(':id')
+  getOneById(@Param('id', new ParseIntPipe()) id: number) {
+    return this.postsService.getOneById(id);
   }
 }

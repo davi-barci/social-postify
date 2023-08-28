@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostsRepository } from './posts.repository';
@@ -17,5 +21,15 @@ export class PostsService {
 
   async getAll() {
     return await this.postsRepository.findAll();
+  }
+
+  async getOneById(id: number) {
+    const post = await this.postsRepository.findOneById(id);
+
+    if (!post) {
+      throw new NotFoundException();
+    }
+
+    return post;
   }
 }
