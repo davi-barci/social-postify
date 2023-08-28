@@ -6,6 +6,7 @@ import { PrismaModule } from '../src/prisma/prisma.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { createNewMedia } from './factories/medias.factory';
 import { createNewPost } from './factories/posts.factory';
+import { createNewPublication } from './factories/publications.factory';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -310,6 +311,118 @@ describe('AppController (e2e)', () => {
 
       const getResponseAfterDelete = await request(app.getHttpServer()).get(
         `/posts/${post.id}`,
+      );
+
+      expect(getResponseAfterDelete.statusCode).toBe(HttpStatus.NOT_FOUND);
+    });
+  });
+
+  describe('/publications', () => {
+    it('/publications (POST) => should create a new publication', async () => {
+      const media = await createNewMedia(prisma, 'Facebook');
+      const post = await createNewPost(prisma);
+
+      const publication = {
+        mediaId: media.id,
+        postId: post.id,
+        date: '2023-08-21T13:25:17.352Z',
+      };
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .post('/publications')
+        .send(publication);
+
+      expect(statusCode).toBe(HttpStatus.CREATED);
+      expect(body).toMatchObject({
+        id: expect.any(Number),
+        mediaId: publication.mediaId,
+        postId: publication.postId,
+        date: publication.date,
+      });
+    });
+
+    it('/publications (GET) => should get all publications', async () => {
+      const firstPublication = await createNewPublication(prisma);
+      const secondPublication = await createNewPublication(prisma);
+
+      const { statusCode, body } = await request(app.getHttpServer()).get(
+        '/publications',
+      );
+
+      expect(statusCode).toBe(HttpStatus.OK);
+
+      expect(body).toEqual(
+        expect.arrayContaining([
+          {
+            id: firstPublication.id,
+            mediaId: firstPublication.mediaId,
+            postId: firstPublication.postId,
+            date: firstPublication.date.toISOString(),
+          },
+          {
+            id: secondPublication.id,
+            mediaId: secondPublication.mediaId,
+            postId: secondPublication.postId,
+            date: secondPublication.date.toISOString(),
+          },
+        ]),
+      );
+    });
+
+    it('/publications/:id (GET) => should get publication by id', async () => {
+      const publication = await createNewPublication(prisma);
+
+      const { statusCode, body } = await request(app.getHttpServer()).get(
+        `/publications/${publication.id}`,
+      );
+
+      expect(statusCode).toBe(HttpStatus.OK);
+
+      expect(body).toMatchObject({
+        id: publication.id,
+        mediaId: publication.mediaId,
+        postId: publication.postId,
+        date: publication.date.toISOString(),
+      });
+    });
+
+    it('/publications/:id (PUT) => should update publication', async () => {
+      const publication = await createNewPublication(prisma);
+      const updatePublication = {
+        mediaId: publication.mediaId,
+        postId: publication.postId,
+        date: '2023-08-21T13:25:17.352Z',
+      };
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .put(`/publications/${publication.id}`)
+        .send(updatePublication);
+
+      expect(statusCode).toBe(HttpStatus.OK);
+
+      expect(body).toMatchObject({
+        id: publication.id,
+        mediaId: updatePublication.mediaId,
+        postId: updatePublication.postId,
+        date: updatePublication.date,
+      });
+    });
+
+    it('/publications/:id (DELETE) => should delete publication', async () => {
+      const publication = await createNewPublication(prisma);
+
+      const getResponseBeforeDelete = await request(app.getHttpServer()).get(
+        `/publications/${publication.id}`,
+      );
+
+      expect(getResponseBeforeDelete.statusCode).toBe(HttpStatus.OK);
+
+      await request(app.getHttpServer()).delete(
+        `/publications/${publication.id}`,
+      );
+
+      const getResponseAfterDelete = await request(app.getHttpServer()).get(
+        `/publications/${publication.id}`,
       );
 
       expect(getResponseAfterDelete.statusCode).toBe(HttpStatus.NOT_FOUND);
