@@ -16,4 +16,12 @@ export class PublicationsRepository {
   async findAll(): Promise<Publication[]> {
     return await this.prisma.publication.findMany();
   }
+
+  async findOneById(id: number): Promise<Publication | null> {
+    return await this.prisma.publication.findFirst({
+      where: {
+        id: id,
+      },
+    });
+  }
 }

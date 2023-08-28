@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { PublicationsService } from './publications.service';
 import { CreatePublicationDto } from './dto/create-publication.dto';
@@ -23,5 +24,10 @@ export class PublicationsController {
   @Get()
   getAll() {
     return this.publicationsService.getAll();
+  }
+
+  @Get(':id')
+  getOneById(@Param('id', new ParseIntPipe()) id: number) {
+    return this.publicationsService.getOneById(id);
   }
 }

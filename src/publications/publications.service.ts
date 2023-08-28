@@ -35,4 +35,14 @@ export class PublicationsService {
   async getAll() {
     return await this.publicationsRepository.findAll();
   }
+
+  async getOneById(id: number) {
+    const publication = await this.publicationsRepository.findOneById(id);
+
+    if (!publication) {
+      throw new NotFoundException();
+    }
+
+    return publication;
+  }
 }
