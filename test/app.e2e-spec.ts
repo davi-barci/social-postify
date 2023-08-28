@@ -5,6 +5,7 @@ import { AppModule } from './../src/app.module';
 import { PrismaModule } from '../src/prisma/prisma.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { createNewMedia } from './factories/medias.factory';
+import { createNewPost } from './factories/posts.factory';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -124,7 +125,7 @@ describe('AppController (e2e)', () => {
       expect(statusCode).toBe(HttpStatus.NOT_FOUND);
     });
 
-    it('/medias (PUT) => should update media', async () => {
+    it('/medias/:id (PUT) => should update media', async () => {
       const mediaFace = await createNewMedia(prisma, 'Facebook');
       const mediaInsta = {
         title: 'Instagram',
@@ -144,7 +145,7 @@ describe('AppController (e2e)', () => {
       });
     });
 
-    it('/medias (PUT) => should return Not Found Exception', async () => {
+    it('/medias/:id (PUT) => should return Not Found Exception', async () => {
       const mediaFace = await createNewMedia(prisma, 'Facebook');
       const mediaInsta = {
         title: 'Instagram',
@@ -158,7 +159,7 @@ describe('AppController (e2e)', () => {
       expect(statusCode).toBe(HttpStatus.NOT_FOUND);
     });
 
-    it('/medias (PUT) => should return Conflict Exception', async () => {
+    it('/medias/:id (PUT) => should return Conflict Exception', async () => {
       const mediaFace = await createNewMedia(prisma, 'Facebook');
       const mediaTwitter = await createNewMedia(prisma, 'Twitter');
 
@@ -169,7 +170,7 @@ describe('AppController (e2e)', () => {
       expect(statusCode).toBe(HttpStatus.CONFLICT);
     });
 
-    it('/medias (DELETE) => should delete media', async () => {
+    it('/medias/:id (DELETE) => should delete media', async () => {
       const mediaFace = await createNewMedia(prisma, 'Facebook');
 
       const getResponseBeforeDelete = await request(app.getHttpServer()).get(
@@ -182,6 +183,133 @@ describe('AppController (e2e)', () => {
 
       const getResponseAfterDelete = await request(app.getHttpServer()).get(
         `/medias/${mediaFace.id}`,
+      );
+
+      expect(getResponseAfterDelete.statusCode).toBe(HttpStatus.NOT_FOUND);
+    });
+  });
+
+  describe('/posts', () => {
+    it('/posts (POST) => should create a new post', async () => {
+      const post = {
+        title: 'Why you should have a guinea pig?',
+        text: 'https://www.guineapigs.com/why-you-should-guinea',
+      };
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .post('/posts')
+        .send(post);
+
+      expect(statusCode).toBe(HttpStatus.CREATED);
+      expect(body).toMatchObject({
+        id: expect.any(Number),
+        title: post.title,
+        text: post.text,
+        image: null,
+      });
+    });
+
+    it('/posts (GET) => should get all posts', async () => {
+      const firstPost = await createNewPost(prisma);
+      const secondPost = await createNewPost(prisma);
+
+      const { statusCode, body } = await request(app.getHttpServer()).get(
+        '/posts',
+      );
+
+      expect(statusCode).toBe(HttpStatus.OK);
+
+      expect(body).toEqual(
+        expect.arrayContaining([
+          {
+            id: firstPost.id,
+            title: firstPost.title,
+            text: firstPost.text,
+            image: null,
+          },
+          {
+            id: secondPost.id,
+            title: secondPost.title,
+            text: secondPost.text,
+            image: null,
+          },
+        ]),
+      );
+    });
+
+    it('/posts/:id (GET) => should get post by id', async () => {
+      const post = await createNewPost(prisma);
+
+      const { statusCode, body } = await request(app.getHttpServer()).get(
+        `/posts/${post.id}`,
+      );
+
+      expect(statusCode).toBe(HttpStatus.OK);
+
+      expect(body).toMatchObject({
+        id: post.id,
+        title: post.title,
+        text: post.text,
+        image: null,
+      });
+    });
+
+    it('/posts/:id (GET) => should return Not Found Exception', async () => {
+      const post = await createNewPost(prisma);
+
+      const { statusCode } = await request(app.getHttpServer()).get(`/posts/0`);
+
+      expect(statusCode).toBe(HttpStatus.NOT_FOUND);
+    });
+
+    it('/posts/:id (PUT) => should update post', async () => {
+      const post = await createNewPost(prisma);
+      const updatePost = {
+        title: 'Title Test',
+        text: 'https://www.guineapigs.com/why-you-should-guinea',
+      };
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .put(`/posts/${post.id}`)
+        .send(updatePost);
+
+      expect(statusCode).toBe(HttpStatus.OK);
+
+      expect(body).toMatchObject({
+        id: post.id,
+        title: updatePost.title,
+        text: updatePost.text,
+        image: null,
+      });
+    });
+
+    it('/posts/:id (PUT) => should return Not Found Exception', async () => {
+      const post = await createNewPost(prisma);
+      const updatePost = {
+        title: 'Title Test',
+        text: 'https://www.guineapigs.com/why-you-should-guinea',
+      };
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .put(`/posts/0`)
+        .send(updatePost);
+
+      expect(statusCode).toBe(HttpStatus.NOT_FOUND);
+    });
+
+    it('/posts/:id (DELETE) => should delete post', async () => {
+      const post = await createNewPost(prisma);
+
+      const getResponseBeforeDelete = await request(app.getHttpServer()).get(
+        `/posts/${post.id}`,
+      );
+
+      expect(getResponseBeforeDelete.statusCode).toBe(HttpStatus.OK);
+
+      await request(app.getHttpServer()).delete(`/posts/${post.id}`);
+
+      const getResponseAfterDelete = await request(app.getHttpServer()).get(
+        `/posts/${post.id}`,
       );
 
       expect(getResponseAfterDelete.statusCode).toBe(HttpStatus.NOT_FOUND);
