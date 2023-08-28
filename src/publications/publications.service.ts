@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -44,5 +45,29 @@ export class PublicationsService {
     }
 
     return publication;
+  }
+
+  async updatePublication(id: number, body: CreatePublicationDto) {
+    const publication = await this.publicationsRepository.findOneById(id);
+
+    if (!publication) {
+      throw new NotFoundException();
+    }
+
+    const publicationDate = new Date(publication.date);
+    const currentDate = new Date();
+
+    if (publicationDate < currentDate) {
+      throw new ForbiddenException();
+    }
+
+    const media = await this.mediasRepository.findOneById(body.mediaId);
+    const post = await this.postsRepository.findOneById(body.postId);
+
+    if (!media || !post) {
+      throw new NotFoundException();
+    }
+
+    return this.publicationsRepository.update(id, body);
   }
 }

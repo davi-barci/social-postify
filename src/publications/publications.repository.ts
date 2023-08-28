@@ -24,4 +24,13 @@ export class PublicationsRepository {
       },
     });
   }
+
+  async update(id: number, body: CreatePublicationDto): Promise<Publication> {
+    return await this.prisma.publication.update({
+      where: {
+        id,
+      },
+      data: body,
+    });
+  }
 }
