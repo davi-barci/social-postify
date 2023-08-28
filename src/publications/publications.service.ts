@@ -8,8 +8,8 @@ import {
 } from '@nestjs/common';
 import { CreatePublicationDto } from './dto/create-publication.dto';
 import { PublicationsRepository } from './publications.repository';
-import { MediasRepository } from '../../src/medias/medias.respository';
-import { PostsRepository } from '../../src/posts/posts.repository';
+import { MediasRepository } from '../medias/medias.respository';
+import { PostsRepository } from '../posts/posts.repository';
 
 @Injectable()
 export class PublicationsService {
