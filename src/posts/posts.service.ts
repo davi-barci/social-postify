@@ -42,4 +42,14 @@ export class PostsService {
 
     return await this.postsRepository.update(id, body);
   }
+
+  async deletePost(id: number) {
+    const media = await this.postsRepository.findOneById(id);
+
+    if (!media) {
+      throw new NotFoundException();
+    }
+
+    return this.postsRepository.delete(id);
+  }
 }
