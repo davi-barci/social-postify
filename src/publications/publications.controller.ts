@@ -19,4 +19,9 @@ export class PublicationsController {
   create(@Body() body: CreatePublicationDto) {
     return this.publicationsService.create(body);
   }
+
+  @Get()
+  getAll() {
+    return this.publicationsService.getAll();
+  }
 }

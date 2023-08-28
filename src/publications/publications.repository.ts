@@ -12,4 +12,8 @@ export class PublicationsRepository {
       data: body,
     });
   }
+
+  async findAll(): Promise<Publication[]> {
+    return await this.prisma.publication.findMany();
+  }
 }
