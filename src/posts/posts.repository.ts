@@ -12,4 +12,8 @@ export class PostsRepository {
       data: body,
     });
   }
+
+  async findAll(): Promise<Post[]> {
+    return await this.prisma.post.findMany();
+  }
 }

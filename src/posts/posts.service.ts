@@ -14,4 +14,8 @@ export class PostsService {
 
     return await this.postsRepository.create(body);
   }
+
+  async getAll() {
+    return await this.postsRepository.findAll();
+  }
 }

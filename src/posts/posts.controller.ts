@@ -19,4 +19,9 @@ export class PostsController {
   create(@Body() body: CreatePostDto) {
     return this.postsService.create(body);
   }
+
+  @Get()
+  getAll() {
+    return this.postsService.getAll();
+  }
 }
