@@ -70,4 +70,14 @@ export class PublicationsService {
 
     return this.publicationsRepository.update(id, body);
   }
+
+  async deletePublication(id: number) {
+    const publication = await this.publicationsRepository.findOneById(id);
+
+    if (!publication) {
+      throw new NotFoundException();
+    }
+
+    return this.publicationsRepository.delete(id);
+  }
 }

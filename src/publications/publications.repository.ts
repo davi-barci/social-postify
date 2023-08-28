@@ -33,4 +33,12 @@ export class PublicationsRepository {
       data: body,
     });
   }
+
+  async delete(id: number): Promise<Publication> {
+    return await this.prisma.publication.delete({
+      where: {
+        id,
+      },
+    });
+  }
 }

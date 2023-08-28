@@ -39,4 +39,9 @@ export class PublicationsController {
   ) {
     return this.publicationsService.updatePublication(id, body);
   }
+
+  @Delete(':id')
+  deletePublication(@Param('id', new ParseIntPipe()) id: number) {
+    return this.publicationsService.deletePublication(id);
+  }
 }
