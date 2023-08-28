@@ -24,4 +24,13 @@ export class PostsRepository {
       },
     });
   }
+
+  async update(id: number, body: CreatePostDto): Promise<Post> {
+    return await this.prisma.post.update({
+      where: {
+        id,
+      },
+      data: body,
+    });
+  }
 }

@@ -32,4 +32,14 @@ export class PostsService {
 
     return post;
   }
+
+  async updatePost(id: number, body: CreatePostDto) {
+    const post = await this.postsRepository.findOneById(id);
+
+    if (!post) {
+      throw new NotFoundException();
+    }
+
+    return await this.postsRepository.update(id, body);
+  }
 }

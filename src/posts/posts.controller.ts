@@ -5,6 +5,7 @@ import {
   Body,
   Param,
   ParseIntPipe,
+  Put,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -27,5 +28,13 @@ export class PostsController {
   @Get(':id')
   getOneById(@Param('id', new ParseIntPipe()) id: number) {
     return this.postsService.getOneById(id);
+  }
+
+  @Put(':id')
+  updateMedia(
+    @Param('id', new ParseIntPipe()) id: number,
+    @Body() body: CreatePostDto,
+  ) {
+    return this.postsService.updatePost(id, body);
   }
 }
