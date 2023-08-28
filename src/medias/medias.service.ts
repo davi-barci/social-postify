@@ -1,15 +1,23 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
+  Inject,
   Injectable,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
 import { CreateMediaDto } from './dto/create-media.dto';
 import { MediasRepository } from './medias.respository';
+import { PublicationsRepository } from 'src/publications/publications.repository';
 
 @Injectable()
 export class MediasService {
-  constructor(private readonly mediasRepository: MediasRepository) {}
+  constructor(
+    @Inject(forwardRef(() => PublicationsRepository))
+    private readonly publicationsRepository: PublicationsRepository,
+    private readonly mediasRepository: MediasRepository,
+  ) {}
 
   async create(body: CreateMediaDto) {
     if (!body.title || !body.username) {
@@ -65,6 +73,13 @@ export class MediasService {
 
     if (!media) {
       throw new NotFoundException();
+    }
+
+    const publicationMedia =
+      await this.publicationsRepository.findOneByMediaId(id);
+
+    if (publicationMedia) {
+      throw new ForbiddenException();
     }
 
     return this.mediasRepository.delete(id);

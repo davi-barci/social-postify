@@ -1,11 +1,12 @@
 import {
   BadRequestException,
   ForbiddenException,
+  Inject,
   Injectable,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
 import { CreatePublicationDto } from './dto/create-publication.dto';
-import { UpdatePublicationDto } from './dto/update-publication.dto';
 import { PublicationsRepository } from './publications.repository';
 import { MediasRepository } from 'src/medias/medias.respository';
 import { PostsRepository } from 'src/posts/posts.repository';
@@ -13,8 +14,9 @@ import { PostsRepository } from 'src/posts/posts.repository';
 @Injectable()
 export class PublicationsService {
   constructor(
-    private readonly publicationsRepository: PublicationsRepository,
+    @Inject(forwardRef(() => MediasRepository))
     private readonly mediasRepository: MediasRepository,
+    private readonly publicationsRepository: PublicationsRepository,
     private readonly postsRepository: PostsRepository,
   ) {}
 
